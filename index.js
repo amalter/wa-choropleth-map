@@ -19,24 +19,26 @@ var cityName = {
     'Covington' : .4,
     'Mercer Island' : .2
 };
-
+//generate colorscale here: https://gka.github.io/palettes/
 function getColor(d) {
-    return d > 90 ? '#f46a00' :
-           d > 30  ? '#f47718' :
-           d > 10  ? '#f48b3a' :
-           d > 6  ? '#f4a05f' :
-           d > 4   ? '#f4b789' :
-           d > 2   ? '#f4cfb2' :
-           d > 0   ? '#f4e4d7' :
-                      '#f4f2ef';
+    return d > 90 ? '#ec4d30' :
+           d > 30  ? '#f36836' :
+           d > 10  ? '#fa7f4a' :
+           d > 6  ? '#ff9663' :
+           d > 4   ? '#ffad82' :
+           d > 2   ? '#ffc3a0' :
+           d > 1   ? '#ffd7c0' :
+                      '#ffebdf';
 }
+
+
 function polyStyle(val) {
     return {
         fillColor: getColor(val),
         weight: 1,
         opacity: .3,
         color: '#c65600',
-        fillOpacity: 0.6
+        fillOpacity: 0.7
     };
 }
 

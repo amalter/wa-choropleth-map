@@ -34,9 +34,8 @@ function polyStyle(val) {
     return {
         fillColor: getColor(val),
         weight: 1,
-        opacity: .5,
+        opacity: .3,
         color: '#c65600',
-        dashArray: '3',
         fillOpacity: 0.6
     };
 }

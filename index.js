@@ -31,7 +31,6 @@ function getColor(d) {
                       '#ffebdf';
 }
 
-
 function polyStyle(val) {
     return {
         fillColor: getColor(val),
@@ -40,6 +39,38 @@ function polyStyle(val) {
         color: '#c65600',
         fillOpacity: 0.7
     };
+}
+
+function highlightFeature(e) {
+    var layer = e.target;
+
+    layer.setStyle({
+        color:'#ec4d30',
+        opacity: .9,
+        fillOpacity: 1
+    });
+
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+    }
+}
+
+function resetHighlight(e) {
+    var layer = e.target;
+    var styleReset = e.target.options.style;
+    layer.setStyle(styleReset);
+}
+
+function zoomToFeature(e) {
+    map.fitBounds(e.target.getBounds());
+}
+
+function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    });
 }
 
 
@@ -53,14 +84,17 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 $.getJSON( "wa_city_limits_coordinates.geojson", function(data) {
     $(data.features).each(function(key, data) {
         $.each(cityName, function (index, val){
-            var polystyle = polyStyle(val);
+            polystyle = polyStyle(val);
 
             if (data.properties.CityName === index) {
-                L.geoJson(data,{
-                    style: polystyle
+                 L.geoJson(data,{
+                    style: polystyle,
+                    onEachFeature : onEachFeature
                 }).addTo(map);
             }
         });// $.each(cityName)
     });//$(data.features).each(function)
 });//getJson
+
+
 

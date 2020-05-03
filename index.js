@@ -73,12 +73,16 @@ function zoomToFeature(e) {
     info.update(layer.feature.properties);
 }
 
+function tapFeature(e){
+    alert('tap!');
+}
+
 function onEachFeature(feature, layer) {
     layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
         click: zoomToFeature,
-       tap : highlightFeature
+       tap : tapFeature
     });
 }
 

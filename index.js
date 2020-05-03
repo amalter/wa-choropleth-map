@@ -70,19 +70,14 @@ function resetHighlight(e) {
 
 function zoomToFeature(e) {
     map.fitBounds(e.target.getBounds());
-    info.update(layer.feature.properties);
-}
-
-function tapFeature(e){
-    alert('tap!');
 }
 
 function onEachFeature(feature, layer) {
     layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
-        click: zoomToFeature,
-       tap : tapFeature
+        mousedown: highlightFeature,//for mobile touch
+        click: zoomToFeature
     });
 }
 

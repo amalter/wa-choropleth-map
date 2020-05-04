@@ -68,16 +68,12 @@ function resetHighlight(e) {
     info.update();
 }
 
-function zoomToFeature(e) {
-    map.fitBounds(e.target.getBounds());
-}
-
 function onEachFeature(feature, layer) {
     layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
         mousedown: highlightFeature,//for mobile touch
-        click: zoomToFeature
+        mouseup: resetHighlight//for mobile touch
     });
 }
 

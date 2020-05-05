@@ -1,8 +1,7 @@
-var mapBoxToken = 'pk.eyJ1IjoiYW1iZXJhbHRlciIsImEiOiJjazlwdHA0aGowZThmM2RvM2Z1amRtcGJvIn0.rABb5kpX7Go1XPcqeq6j_g';
-var map = L.map('map').setView([47.6062, -122.3321], 10);
-var info = L.control();
-var cityVal;
-var cityName = {
+const mapBoxToken = 'pk.eyJ1IjoiYW1iZXJhbHRlciIsImEiOiJjazlwdHA0aGowZThmM2RvM2Z1amRtcGJvIn0.rABb5kpX7Go1XPcqeq6j_g';
+const map = L.map('map').setView([47.6062, -122.3321], 10);
+const info = L.control();
+const waCities = {
     'Seattle':37.6,
     'Kent': 8.2, 
     'Federal Way': 6.5,
@@ -21,6 +20,7 @@ var cityName = {
     'Covington' : .4,
     'Mercer Island' : .2
 };
+
 //generate colorscale here: https://gka.github.io/palettes/
 function getColor(d) {
     return d > 90 ? '#ec4d30' :
@@ -33,9 +33,9 @@ function getColor(d) {
                       '#ffebdf';
 }
 
-function polyStyle(val) {
+function polyStyle(num) {
     return {
-        fillColor: getColor(val),
+        fillColor: getColor(num),
         weight: 1,
         opacity: .3,
         color: '#c65600',
@@ -44,27 +44,22 @@ function polyStyle(val) {
 }
 
 function highlightFeature(e) {
-    var layer = e.target;
-
+    let layer = e.target;
     layer.setStyle({
         color:'#c65600',
         weight: 2,
         opacity: .9,
     });
-
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
         layer.bringToFront();
     }
-
     info.update(layer.feature.properties);
-    
 }
 
 function resetHighlight(e) {
-    var layer = e.target;
-    var styleReset = e.target.options.style;
+    let layer = e.target;
+    let styleReset = e.target.options.style;
     layer.setStyle(styleReset);
-
     info.update();
 }
 
@@ -84,43 +79,47 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     accessToken: mapBoxToken
 }).addTo(map);
 
-$.getJSON( "wa_city_limits_coordinates.geojson", function(data) {
-    $(data.features).each(function(key, data) {
-        $.each(cityName, function (index, val){
-            
-            polystyle = polyStyle(val);
-
-            if (data.properties.CityName === index) {
-                cityVal = val;
+//draws the polygons of cities
+async function drawPolygon(){
+    const data = await getGeoData();
+    data.features.forEach(data => {
+        for (let city in waCities) {
+            let cityNum = waCities[city];
+            polystyle = polyStyle(cityNum);
+            if (data.properties.CityName === city) {
                  L.geoJson(data,{
                     style: polystyle,
                     onEachFeature : onEachFeature
                 }).addTo(map);
             }
-        });// $.each(cityName)
-    });//$(data.features).each(function)
-});//getJson
+        }
+    });//data.features.forEach
+}
+drawPolygon();
+
+async function getGeoData(){
+    const response = await fetch('wa_city_limits_coordinates.geojson');
+    const data = await response.json();
+    return data;
+}
 
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
     this.update();
     return this._div;
 };
-// method that we will use to update the control based on feature properties passed
+// method that will update the control based on feature properties passed
 info.update = function (props) {
     this._div.innerHTML = '<h4>Rental Assistance Applications</h4>';
     if (props) {
-        $.each(cityName, function (index, val){
-            if (props.CityName === index) {
-                cityVal = val;
+        for (let city in waCities) {
+            if (props.CityName === city) {
+                let cityNum = waCities[city];
             }
-        });// $.each(cityName)
-
-       this._div.innerHTML += '<b>' + props.CityName + '</b><br />' + cityVal + '%';
-            
+        }
+       this._div.innerHTML += '<b>' + props.CityName + '</b><br />' + cityNum + '%';  
     } else {
         this._div.innerHTML += 'Hover over a city';
     }
 };
-
 info.addTo(map);

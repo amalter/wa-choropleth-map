@@ -81,10 +81,11 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 
 //draws the polygons of cities
 async function drawPolygon(){
+    let cityNum;
     const data = await getGeoData();
     data.features.forEach(data => {
         for (let city in waCities) {
-            let cityNum = waCities[city];
+            cityNum = waCities[city];
             polystyle = polyStyle(cityNum);
             if (data.properties.CityName === city) {
                  L.geoJson(data,{
@@ -110,11 +111,12 @@ info.onAdd = function (map) {
 };
 // method that will update the control based on feature properties passed
 info.update = function (props) {
+    let cityNum;
     this._div.innerHTML = '<h4>Rental Assistance Applications</h4>';
     if (props) {
         for (let city in waCities) {
             if (props.CityName === city) {
-                let cityNum = waCities[city];
+                cityNum = waCities[city];
             }
         }
        this._div.innerHTML += '<b>' + props.CityName + '</b><br />' + cityNum + '%';  
